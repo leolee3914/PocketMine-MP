@@ -128,4 +128,8 @@ class BrewingStand extends Transparent{
 			}
 		}
 	}
+
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [$this->asItem()];
+	}
 }
