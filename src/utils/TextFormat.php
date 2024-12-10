@@ -224,136 +224,46 @@ abstract class TextFormat{
 		$newString = "";
 		$tokens = 0;
 		foreach(self::tokenize($string) as $token){
-			switch($token){
-				case TextFormat::BOLD:
-					$newString .= "<span style=font-weight:bold>";
-					++$tokens;
-					break;
-				case TextFormat::OBFUSCATED:
-					//$newString .= "<span style=text-decoration:line-through>";
-					//++$tokens;
-					break;
-				case TextFormat::ITALIC:
-					$newString .= "<span style=font-style:italic>";
-					++$tokens;
-					break;
-				case TextFormat::RESET:
-					$newString .= str_repeat("</span>", $tokens);
-					$tokens = 0;
-					break;
-
-				//Colors
-				case TextFormat::BLACK:
-					$newString .= "<span style=color:#000>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_BLUE:
-					$newString .= "<span style=color:#00A>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_GREEN:
-					$newString .= "<span style=color:#0A0>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_AQUA:
-					$newString .= "<span style=color:#0AA>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_RED:
-					$newString .= "<span style=color:#A00>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_PURPLE:
-					$newString .= "<span style=color:#A0A>";
-					++$tokens;
-					break;
-				case TextFormat::GOLD:
-					$newString .= "<span style=color:#FA0>";
-					++$tokens;
-					break;
-				case TextFormat::GRAY:
-					$newString .= "<span style=color:#AAA>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_GRAY:
-					$newString .= "<span style=color:#555>";
-					++$tokens;
-					break;
-				case TextFormat::BLUE:
-					$newString .= "<span style=color:#55F>";
-					++$tokens;
-					break;
-				case TextFormat::GREEN:
-					$newString .= "<span style=color:#5F5>";
-					++$tokens;
-					break;
-				case TextFormat::AQUA:
-					$newString .= "<span style=color:#5FF>";
-					++$tokens;
-					break;
-				case TextFormat::RED:
-					$newString .= "<span style=color:#F55>";
-					++$tokens;
-					break;
-				case TextFormat::LIGHT_PURPLE:
-					$newString .= "<span style=color:#F5F>";
-					++$tokens;
-					break;
-				case TextFormat::YELLOW:
-					$newString .= "<span style=color:#FF5>";
-					++$tokens;
-					break;
-				case TextFormat::WHITE:
-					$newString .= "<span style=color:#FFF>";
-					++$tokens;
-					break;
-				case TextFormat::MINECOIN_GOLD:
-					$newString .= "<span style=color:#dd0>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_QUARTZ:
-					$newString .= "<span style=color:#e2d3d1>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_IRON:
-					$newString .= "<span style=color:#cec9c9>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_NETHERITE:
-					$newString .= "<span style=color:#44393a>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_REDSTONE:
-					$newString .= "<span style=color:#961506>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_COPPER:
-					$newString .= "<span style=color:#b4684d>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_GOLD:
-					$newString .= "<span style=color:#deb02c>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_EMERALD:
-					$newString .= "<span style=color:#119f36>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_DIAMOND:
-					$newString .= "<span style=color:#2cb9a8>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_LAPIS:
-					$newString .= "<span style=color:#20487a>";
-					++$tokens;
-					break;
-				case TextFormat::MATERIAL_AMETHYST:
-					$newString .= "<span style=color:#9a5cc5>";
-					++$tokens;
-					break;
-				default:
-					$newString .= $token;
-					break;
+			$formatString = match($token){
+				TextFormat::BLACK => "color:#000",
+				TextFormat::DARK_BLUE => "color:#00A",
+				TextFormat::DARK_GREEN => "color:#0A0",
+				TextFormat::DARK_AQUA => "color:#0AA",
+				TextFormat::DARK_RED => "color:#A00",
+				TextFormat::DARK_PURPLE => "color:#A0A",
+				TextFormat::GOLD => "color:#FA0",
+				TextFormat::GRAY => "color:#AAA",
+				TextFormat::DARK_GRAY => "color:#555",
+				TextFormat::BLUE => "color:#55F",
+				TextFormat::GREEN => "color:#5F5",
+				TextFormat::AQUA => "color:#5FF",
+				TextFormat::RED => "color:#F55",
+				TextFormat::LIGHT_PURPLE => "color:#F5F",
+				TextFormat::YELLOW => "color:#FF5",
+				TextFormat::WHITE => "color:#FFF",
+				TextFormat::MINECOIN_GOLD => "color:#dd0",
+				TextFormat::MATERIAL_QUARTZ => "color:#e2d3d1",
+				TextFormat::MATERIAL_IRON => "color:#cec9c9",
+				TextFormat::MATERIAL_NETHERITE => "color:#44393a",
+				TextFormat::MATERIAL_REDSTONE => "color:#961506",
+				TextFormat::MATERIAL_COPPER => "color:#b4684d",
+				TextFormat::MATERIAL_GOLD => "color:#deb02c",
+				TextFormat::MATERIAL_EMERALD => "color:#119f36",
+				TextFormat::MATERIAL_DIAMOND => "color:#2cb9a8",
+				TextFormat::MATERIAL_LAPIS => "color:#20487a",
+				TextFormat::MATERIAL_AMETHYST => "color:#9a5cc5",
+				TextFormat::BOLD => "font-weight:bold",
+				TextFormat::ITALIC => "font-style:italic",
+				default => null
+			};
+			if($formatString !== null){
+				$newString .= "<span style=\"$formatString\">";
+				++$tokens;
+			}elseif($token === TextFormat::RESET){
+				$newString .= str_repeat("</span>", $tokens);
+				$tokens = 0;
+			}else{
+				$newString .= $token;
 			}
 		}
 
