@@ -33,6 +33,7 @@ use function file_put_contents;
 use function fopen;
 use function fwrite;
 use function gc_disable;
+use function gc_enable;
 use function gc_enabled;
 use function get_class;
 use function get_declared_classes;
