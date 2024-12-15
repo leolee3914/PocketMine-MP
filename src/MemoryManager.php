@@ -71,7 +71,7 @@ class MemoryManager{
 		private Server $server
 	){
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Memory Manager");
-		$this->cycleGcManager = new GarbageCollectorManager($this->logger);
+		$this->cycleGcManager = new GarbageCollectorManager($this->logger, Timings::$memoryManager);
 
 		$this->init($server->getConfigGroup());
 	}

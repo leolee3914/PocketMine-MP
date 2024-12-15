@@ -54,10 +54,11 @@ final class GarbageCollectorManager{
 
 	public function __construct(
 		\Logger $logger,
+		?TimingsHandler $parentTimings,
 	){
 		gc_disable();
 		$this->logger = new \PrefixedLogger($logger, "Cyclic Garbage Collector");
-		$this->timings = new TimingsHandler("Cyclic Garbage Collector");
+		$this->timings = new TimingsHandler("Cyclic Garbage Collector", $parentTimings);
 	}
 
 	private function adjustGcThreshold(int $cyclesCollected, int $rootsAfterGC) : void{

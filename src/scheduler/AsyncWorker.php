@@ -29,6 +29,7 @@ use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\Worker;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use function ini_set;
 
@@ -72,7 +73,7 @@ class AsyncWorker extends Worker{
 		}
 
 		self::$notifier = $this->sleeperEntry->createNotifier();
-		self::$cycleGcManager = new GarbageCollectorManager($this->logger);
+		self::$cycleGcManager = new GarbageCollectorManager($this->logger, Timings::$asyncTaskWorkers);
 	}
 
 	public function getLogger() : ThreadSafeLogger{
