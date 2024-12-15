@@ -99,17 +99,11 @@ class MemoryManager{
 
 	private int $garbageCollectionPeriod;
 	private int $garbageCollectionTicker = 0;
-	private bool $garbageCollectionTrigger;
-	private bool $garbageCollectionAsync;
 
 	private int $cycleCollectionThreshold = self::GC_THRESHOLD_DEFAULT;
 	private int $cycleCollectionTimeTotalNs = 0;
 
 	private int $lowMemChunkRadiusOverride;
-	private bool $lowMemChunkGC;
-
-	private bool $lowMemDisableChunkCache;
-	private bool $lowMemClearWorldCache;
 
 	private bool $dumpWorkers = true;
 
@@ -157,14 +151,8 @@ class MemoryManager{
 		$this->continuousTriggerRate = $config->getPropertyInt(Yml::MEMORY_CONTINUOUS_TRIGGER_RATE, self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
 
 		$this->garbageCollectionPeriod = $config->getPropertyInt(Yml::MEMORY_GARBAGE_COLLECTION_PERIOD, self::DEFAULT_TICKS_PER_GC);
-		$this->garbageCollectionTrigger = $config->getPropertyBool(Yml::MEMORY_GARBAGE_COLLECTION_LOW_MEMORY_TRIGGER, true);
-		$this->garbageCollectionAsync = $config->getPropertyBool(Yml::MEMORY_GARBAGE_COLLECTION_COLLECT_ASYNC_WORKER, true);
 
 		$this->lowMemChunkRadiusOverride = $config->getPropertyInt(Yml::MEMORY_MAX_CHUNKS_CHUNK_RADIUS, 4);
-		$this->lowMemChunkGC = $config->getPropertyBool(Yml::MEMORY_MAX_CHUNKS_TRIGGER_CHUNK_COLLECT, true);
-
-		$this->lowMemDisableChunkCache = $config->getPropertyBool(Yml::MEMORY_WORLD_CACHES_DISABLE_CHUNK_CACHE, true);
-		$this->lowMemClearWorldCache = $config->getPropertyBool(Yml::MEMORY_WORLD_CACHES_LOW_MEMORY_TRIGGER, true);
 
 		$this->dumpWorkers = $config->getPropertyBool(Yml::MEMORY_MEMORY_DUMP_DUMP_ASYNC_WORKER, true);
 	}
@@ -177,8 +165,11 @@ class MemoryManager{
 		return $this->globalMemoryLimit;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function canUseChunkCache() : bool{
-		return !$this->lowMemory || !$this->lowMemDisableChunkCache;
+		return !$this->lowMemory;
 	}
 
 	/**
@@ -194,26 +185,19 @@ class MemoryManager{
 	public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0) : void{
 		$this->logger->debug(sprintf("%sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
-		if($this->lowMemClearWorldCache){
-			foreach($this->server->getWorldManager()->getWorlds() as $world){
-				$world->clearCache(true);
-			}
-			ChunkCache::pruneCaches();
+		foreach($this->server->getWorldManager()->getWorlds() as $world){
+			$world->clearCache(true);
 		}
+		ChunkCache::pruneCaches();
 
-		if($this->lowMemChunkGC){
-			foreach($this->server->getWorldManager()->getWorlds() as $world){
-				$world->doChunkGarbageCollection();
-			}
+		foreach($this->server->getWorldManager()->getWorlds() as $world){
+			$world->doChunkGarbageCollection();
 		}
 
 		$ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount);
 		$ev->call();
 
-		$cycles = 0;
-		if($this->garbageCollectionTrigger){
-			$cycles = $this->triggerGarbageCollector();
-		}
+		$cycles = $this->triggerGarbageCollector();
 
 		$this->logger->debug(sprintf("Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
@@ -289,14 +273,12 @@ class MemoryManager{
 	public function triggerGarbageCollector() : int{
 		Timings::$garbageCollector->startTiming();
 
-		if($this->garbageCollectionAsync){
-			$pool = $this->server->getAsyncPool();
-			if(($w = $pool->shutdownUnusedWorkers()) > 0){
-				$this->logger->debug("Shut down $w idle async pool workers");
-			}
-			foreach($pool->getRunningWorkers() as $i){
-				$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
-			}
+		$pool = $this->server->getAsyncPool();
+		if(($w = $pool->shutdownUnusedWorkers()) > 0){
+			$this->logger->debug("Shut down $w idle async pool workers");
+		}
+		foreach($pool->getRunningWorkers() as $i){
+			$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
 		}
 
 		$cycles = gc_collect_cycles();
