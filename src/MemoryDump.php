@@ -33,6 +33,7 @@ use function file_put_contents;
 use function fopen;
 use function fwrite;
 use function gc_disable;
+use function gc_enabled;
 use function get_class;
 use function get_declared_classes;
 use function get_defined_functions;
@@ -66,6 +67,7 @@ final class MemoryDump{
 	public static function dumpMemory(mixed $startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
+		$gcEnabled = gc_enabled();
 		gc_disable();
 
 		if(!file_exists($outputFolder)){
@@ -244,6 +246,9 @@ final class MemoryDump{
 		$logger->info("Finished!");
 
 		ini_set('memory_limit', $hardLimit);
+		if($gcEnabled){
+			gc_enable();
+		}
 	}
 
 	/**
