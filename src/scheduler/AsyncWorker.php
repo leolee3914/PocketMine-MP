@@ -73,6 +73,7 @@ class AsyncWorker extends Worker{
 		}
 
 		self::$notifier = $this->sleeperEntry->createNotifier();
+		Timings::init();
 		self::$cycleGcManager = new GarbageCollectorManager($this->logger, Timings::$asyncTaskWorkers);
 	}
 
