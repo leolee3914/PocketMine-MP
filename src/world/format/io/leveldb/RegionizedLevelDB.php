@@ -92,7 +92,12 @@ final class RegionizedLevelDB extends BaseLevelDB{
 
 	protected function coordsFromChunkIndex(string $chunkIndex) : array{
 		//TODO: these indexes don't need to use long in separated DBs, we could make them smaller and save space
-		return morton2d_decode(Binary::readLong($chunkIndex));
+		/**
+		 * @var int[] $decoded
+		 * @phpstan-var array{int, int} $decoded
+		 */
+		$decoded = morton2d_decode(Binary::readLong($chunkIndex));
+		return $decoded;
 	}
 
 	protected function coordsToChunkIndex(int $chunkX, int $chunkZ) : string{
