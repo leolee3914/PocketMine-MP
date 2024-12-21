@@ -32,7 +32,6 @@ use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function array_key_exists;
 use function file_exists;
-use function intdiv;
 use function is_dir;
 use function mkdir;
 use function morton2d_decode;
@@ -107,13 +106,13 @@ final class RegionizedLevelDB extends BaseLevelDB{
 	protected function getDBPathForCoords(int $chunkX, int $chunkZ) : string{
 		return Path::join(self::dbRegionPath($this->path, $this->regionLength), sprintf(
 			"db.%d.%d",
-			intdiv($chunkX, $this->regionLength),
-			intdiv($chunkZ, $this->regionLength)
+			(int) floor($chunkX / $this->regionLength),
+			(int) floor($chunkZ / $this->regionLength)
 		));
 	}
 
 	protected function getDBIndexForCoords(int $chunkX, int $chunkZ) : int{
-		return morton2d_encode(intdiv($chunkX, $this->regionLength), intdiv($chunkZ, $this->regionLength));
+		return morton2d_encode((int) floor($chunkX / $this->regionLength), (int) floor($chunkZ / $this->regionLength));
 	}
 
 	protected function fetchDBForCoords(int $chunkX, int $chunkZ, bool $createIfMissing) : ?\LevelDB{
