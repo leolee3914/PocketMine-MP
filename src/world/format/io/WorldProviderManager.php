@@ -53,7 +53,7 @@ final class WorldProviderManager{
 
 		//any arbitrary size is supported, but powers of 2 are best
 		//these are the most likely to be useful
-		foreach([32, 64, 128, 256] as $regionLength){
+		foreach([128, 256] as $regionLength){
 			$this->addProvider(new WritableWorldProviderManagerEntry(
 				fn(string $path) => RegionizedLevelDB::isValid($path, $regionLength),
 				fn(string $path, \Logger $logger) => new RegionizedLevelDB($path, $logger, $regionLength),
