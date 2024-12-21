@@ -153,6 +153,9 @@ class FormatConverter{
 				$this->logger->info("Converted $counter / $count chunks (" . floor($this->chunksPerProgressUpdate / $diff) . " chunks/sec)");
 				flush();
 			}
+			if(($counter % (2 ** 16)) === 0){
+				$new->doGarbageCollection();
+			}
 		}
 		$total = microtime(true) - $start;
 		$this->logger->info("Converted $counter / $counter chunks in " . round($total, 3) . " seconds (" . floor($counter / $total) . " chunks/sec)");
