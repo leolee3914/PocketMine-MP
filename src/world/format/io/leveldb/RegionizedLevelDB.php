@@ -32,6 +32,7 @@ use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function array_key_exists;
 use function file_exists;
+use function floor;
 use function is_dir;
 use function mkdir;
 use function morton2d_decode;
