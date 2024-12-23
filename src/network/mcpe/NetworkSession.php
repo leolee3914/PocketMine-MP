@@ -115,6 +115,7 @@ use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use pocketmine\world\Position;
+use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use function array_map;
 use function array_values;
@@ -1179,14 +1180,31 @@ class NetworkSession{
 	}
 
 	/**
+	 * @phpstan-param \Closure() : void $onCompletion
+	 */
+	private function sendChunkPacket(string $chunkPacket, \Closure $onCompletion, World $world) : void{
+		$world->timings->syncChunkSend->startTiming();
+		try{
+			$this->queueCompressed($chunkPacket);
+			$onCompletion();
+		}finally{
+			$world->timings->syncChunkSend->stopTiming();
+		}
+	}
+
+	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
 	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
 		$world = $this->player->getLocation()->getWorld();
-		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
-
+		$promiseOrPacket = ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ);
+		if(is_string($promiseOrPacket)){
+			$this->sendChunkPacket($promiseOrPacket, $onCompletion, $world);
+			return;
+		}
+		$promiseOrPacket->onResolve(
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use ($world, $onCompletion, $chunkX, $chunkZ) : void{
 				if(!$this->isConnected()){
@@ -1204,13 +1222,7 @@ class NetworkSession{
 					//to NEEDED if they want to be resent.
 					return;
 				}
-				$world->timings->syncChunkSend->startTiming();
-				try{
-					$this->queueCompressed($promise);
-					$onCompletion();
-				}finally{
-					$world->timings->syncChunkSend->stopTiming();
-				}
+				$this->sendChunkPacket($promise->getResult(), $onCompletion, $world);
 			}
 		);
 	}
