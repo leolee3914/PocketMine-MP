@@ -13,6 +13,7 @@ body:
         > DON'T paste the crashdump data directly into an issue.
 
   - type: input
+    id: crashdump-url
     attributes:
       label: Link to crashdump
     validations:
