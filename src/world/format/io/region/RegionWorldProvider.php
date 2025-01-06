@@ -93,10 +93,12 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/**
-	 * @param int $regionX reference parameter
-	 * @param int $regionZ reference parameter
+	 * @param int|null $regionX reference parameter
+	 * @param int|null $regionZ reference parameter
 	 * @phpstan-param-out int $regionX
 	 * @phpstan-param-out int $regionZ
+	 *
+	 * TODO: make this private
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
@@ -154,6 +156,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 	/**
 	 * @return CompoundTag[]
+	 * @phpstan-return list<CompoundTag>
+	 *
 	 * @throws CorruptedChunkException
 	 */
 	protected static function getCompoundList(string $context, ListTag $list) : array{
