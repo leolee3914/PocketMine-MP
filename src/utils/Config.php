@@ -72,7 +72,7 @@ class Config{
 
 	/**
 	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
+	 * @phpstan-var array<mixed, mixed>
 	 */
 	private array $config = [];
 
@@ -450,7 +450,7 @@ class Config{
 
 	/**
 	 * @return mixed[]
-	 * @phpstan-return list<string>|array<string, mixed>
+	 * @phpstan-return list<mixed>|array<mixed, mixed>
 	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
@@ -458,7 +458,6 @@ class Config{
 
 	/**
 	 * @param mixed[] $defaults
-	 * @phpstan-param array<string, mixed> $defaults
 	 */
 	public function setDefaults(array $defaults) : void{
 		$this->fillDefaults($defaults, $this->config);
@@ -467,13 +466,11 @@ class Config{
 	/**
 	 * @param mixed[] $default
 	 * @param mixed[] $data    reference parameter
-	 * @phpstan-param array<string, mixed> $default
-	 * @phpstan-param array<string, mixed> $data
-	 * @phpstan-param-out array<string, mixed> $data
+	 * @phpstan-param-out array<mixed, mixed> $data
 	 */
 	private function fillDefaults(array $default, array &$data) : int{
 		$changed = 0;
-		foreach(Utils::stringifyKeys($default) as $k => $v){
+		foreach(Utils::promoteKeys($default) as $k => $v){
 			if(is_array($v)){
 				if(!isset($data[$k]) || !is_array($data[$k])){
 					$data[$k] = [];
@@ -560,7 +557,7 @@ class Config{
 						};
 						break;
 				}
-				$result[(string) $k] = $v;
+				$result[$k] = $v;
 			}
 		}
 
