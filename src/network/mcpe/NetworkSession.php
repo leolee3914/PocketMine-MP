@@ -164,7 +164,10 @@ class NetworkSession{
 
 	private ?EncryptionContext $cipher = null;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $sendBuffer = [];
 	/**
 	 * @var PromiseResolver[]
@@ -544,6 +547,7 @@ class NetworkSession{
 	 * @phpstan-return Promise<true>
 	 */
 	public function sendDataPacketWithReceipt(ClientboundPacket $packet, bool $immediate = false) : Promise{
+		/** @phpstan-var PromiseResolver<true> $resolver */
 		$resolver = new PromiseResolver();
 
 		if(!$this->sendDataPacketInternal($packet, $immediate, $resolver)){
