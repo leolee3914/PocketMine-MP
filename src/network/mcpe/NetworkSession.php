@@ -118,7 +118,6 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use function array_map;
-use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
