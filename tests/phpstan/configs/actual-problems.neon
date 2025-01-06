@@ -791,7 +791,7 @@ parameters:
 			path: ../../../src/utils/Config.php
 
 		-
-			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<int\\|string, bool\\|float\\|int\\|string\\>, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
 

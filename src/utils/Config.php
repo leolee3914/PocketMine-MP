@@ -506,8 +506,8 @@ class Config{
 	}
 
 	/**
-	 * @param string[] $entries
-	 * @phpstan-param list<string> $entries
+	 * @param string[]|int[] $entries
+	 * @phpstan-param list<int|string> $entries
 	 */
 	public static function writeList(array $entries) : string{
 		return implode("\n", $entries);
@@ -515,11 +515,11 @@ class Config{
 
 	/**
 	 * @param string[]|int[]|float[]|bool[] $config
-	 * @phpstan-param array<string, string|int|float|bool> $config
+	 * @phpstan-param array<int|string, string|int|float|bool> $config
 	 */
 	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach(Utils::stringifyKeys($config) as $k => $v){
+		foreach(Utils::promoteKeys($config) as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
 			}
@@ -531,7 +531,7 @@ class Config{
 
 	/**
 	 * @return string[]|int[]|float[]|bool[]
-	 * @phpstan-return array<string, string|int|float|bool>
+	 * @phpstan-return array<int|string, string|int|float|bool>
 	 */
 	public static function parseProperties(string $content) : array{
 		$result = [];

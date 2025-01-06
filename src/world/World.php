@@ -1364,7 +1364,7 @@ class World implements ChunkManager{
 					 * TODO: phpstan can't infer these types yet :(
 					 * @phpstan-var array<int, LightArray> $blockLight
 					 * @phpstan-var array<int, LightArray> $skyLight
-					 * @phpstan-var array<int, int>        $heightMap
+					 * @phpstan-var non-empty-list<int>    $heightMap
 					 */
 					if($this->unloaded || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true){
 						return;
