@@ -80,6 +80,7 @@ abstract class Command{
 
 	/**
 	 * @param string[] $args
+	 * @phpstan-param list<string> $args
 	 *
 	 * @return mixed
 	 * @throws CommandException
