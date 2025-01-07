@@ -75,8 +75,7 @@ final class FlatGeneratorOptions{
 		$y = 0;
 		$itemParser = LegacyStringToItemParser::getInstance();
 		foreach($split as $line){
-			preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches);
-			if(count($matches) !== 3){
+			if(preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches) !== 1){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\"");
 			}
 
