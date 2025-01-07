@@ -127,6 +127,12 @@ parameters:
 			path: ../../../src/item/WritableBookBase.php
 
 		-
+			message: '#^Parameter \#3 \$input of class pocketmine\\network\\mcpe\\protocol\\types\\recipe\\ShapedRecipe constructor expects list\<list\<pocketmine\\network\\mcpe\\protocol\\types\\recipe\\RecipeIngredient\>\>, array\<int\<0, max\>, non\-empty\-array\<int\<0, max\>, pocketmine\\network\\mcpe\\protocol\\types\\recipe\\RecipeIngredient\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/network/mcpe/cache/CraftingDataCache.php
+
+		-
 			message: '#^Method pocketmine\\network\\mcpe\\compression\\ZlibCompressor\:\:getNetworkId\(\) never returns 1 so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
