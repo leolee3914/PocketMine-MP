@@ -469,7 +469,15 @@ final class Utils{
 				}
 				$params = implode(", ", $paramsList);
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " .
+				(isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") .
+				"(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " .
+				(isset($trace[$i]["class"]) ?
+					$trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") :
+					""
+				) .
+				$trace[$i]["function"] .
+				"(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}
