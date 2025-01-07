@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \#3 \$entityNBT of class pocketmine\\world\\format\\io\\ChunkData constructor expects list\<pocketmine\\nbt\\tag\\CompoundTag\>, array\<pocketmine\\nbt\\tag\\CompoundTag\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/world/format/io/leveldb/LevelDB.php
-
-		-
-			message: '#^Parameter \#4 \$tileNBT of class pocketmine\\world\\format\\io\\ChunkData constructor expects list\<pocketmine\\nbt\\tag\\CompoundTag\>, array\<pocketmine\\nbt\\tag\\CompoundTag\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/world/format/io/leveldb/LevelDB.php
-
-		-
 			message: '#^Parameter \#1 \$input of class pocketmine\\crafting\\json\\ShapelessRecipeData constructor expects list\<pocketmine\\crafting\\json\\RecipeIngredientData\>, array\<pocketmine\\crafting\\json\\RecipeIngredientData\> given\.$#'
 			identifier: argument.type
 			count: 1
