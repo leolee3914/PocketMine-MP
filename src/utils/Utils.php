@@ -406,6 +406,7 @@ final class Utils{
 
 	/**
 	 * @param mixed[][] $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 * @return string[]
 	 */
 	public static function printableExceptionInfo(\Throwable $e, $trace = null) : array{
