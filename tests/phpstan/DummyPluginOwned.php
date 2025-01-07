@@ -21,8 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils\fixtures;
+namespace pocketmine\plugin;
 
-trait TestTrait{ // @phpstan-ignore trait.unused
-
+class DummyPluginOwned{
+	use PluginOwnedTrait;
 }
