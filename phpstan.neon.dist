@@ -45,6 +45,7 @@ parameters:
 		- pocketmine\DEBUG
 		- pocketmine\IS_DEVELOPMENT_BUILD
 	stubFiles:
+		- tests/phpstan/stubs/chunkutils2.stub
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/leveldb.stub
 		- tests/phpstan/stubs/pmmpthread.stub
