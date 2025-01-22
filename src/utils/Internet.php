@@ -157,21 +157,22 @@ class Internet{
 	 * POSTs data to an URL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
+	 * @phpstan-template TErrorVar of mixed
+	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
 	 * @param string|null     $err          reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
-	 * @phpstan-param-out string|null              $err
+	 * @phpstan-param TErrorVar                    $err
+	 * @phpstan-param-out TErrorVar|string         $err
 	 */
 	public static function postURL(string $page, array|string $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
-			$result = self::simpleCurl($page, $timeout, $extraHeaders, [
+			return self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,
 				CURLOPT_POSTFIELDS => $args
 			]);
-			$err = null;
-			return $result;
 		}catch(InternetException $ex){
 			$err = $ex->getMessage();
 			return null;
