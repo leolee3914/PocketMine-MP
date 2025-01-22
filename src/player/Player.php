@@ -184,6 +184,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
 
+	public const DEFAULT_FLIGHT_SPEED_MULTIPLIER = 0.05;
+
 	public const TAG_FIRST_PLAYED = "firstPlayed"; //TAG_Long
 	public const TAG_LAST_PLAYED = "lastPlayed"; //TAG_Long
 	private const TAG_GAME_MODE = "playerGameType"; //TAG_Int
@@ -284,6 +286,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+
+	protected float $flightSpeedMultiplier = self::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -516,6 +520,41 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function isFlying() : bool{
 		return $this->flying;
+	}
+
+	/**
+	 * Sets the player's flight speed multiplier.
+	 *
+	 * Normal flying speed in blocks-per-tick is (multiplier * 10) blocks per tick.
+	 * When sprint-flying, this is doubled to 20.
+	 *
+	 * If set to zero, the player will not be able to move in the xz plane when flying.
+	 * Negative values will invert the controls.
+	 *
+	 * Note: Movement speed attribute does not influence flight speed.
+	 *
+	 * @see Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER
+	 */
+	public function setFlightSpeedMultiplier(float $flightSpeedMultiplier) : void{
+		if($this->flightSpeedMultiplier !== $flightSpeedMultiplier){
+			$this->flightSpeedMultiplier = $flightSpeedMultiplier;
+			$this->getNetworkSession()->syncAbilities($this);
+		}
+	}
+
+	/**
+	 * Returns the player's flight speed multiplier.
+	 *
+	 * Normal flying speed in blocks-per-tick is (multiplier * 10) blocks per tick.
+	 * When sprint-flying, this is doubled to 20.
+	 *
+	 * If set to zero, the player will not be able to move in the xz plane when flying.
+	 * Negative values will invert the controls.
+	 *
+	 * @see Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER
+	 */
+	public function getFlightSpeedMultiplier() : float{
+		return $this->flightSpeedMultiplier;
 	}
 
 	public function setAutoJump(bool $value) : void{
