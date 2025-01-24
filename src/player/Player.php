@@ -1363,7 +1363,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$revert = false;
 
-		if($distanceSquared > 225){ //15 blocks
+		if($distanceSquared > (32 ** 2)){
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *

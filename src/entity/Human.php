@@ -295,6 +295,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->enderInventory = new PlayerEnderInventory($this);
 		$this->initHumanData($nbt);
 
+		$itemNbtDeserializeFunction = function ( CompoundTag $tag ) : Item {
+			try {
+				return Item::nbtDeserialize($tag);
+			} catch ( SavedDataLoadingException $e ) {
+				$this->server->getLogger()->logException($e);
+				return \pocketmine\block\VanillaBlocks::INFO_UPDATE()->asItem();
+			}
+		};
+
 		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY);
 		if($inventoryTag !== null){
 			$inventoryItems = [];
@@ -306,9 +315,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 && $slot < 104){ //Armor
-					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
+					$armorInventoryItems[$slot - 100] = $itemNbtDeserializeFunction($item);
 				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
-					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
+					$inventoryItems[$slot - 9] = $itemNbtDeserializeFunction($item);
 				}
 			}
 
@@ -317,7 +326,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$offHand = $nbt->getCompoundTag(self::TAG_OFF_HAND_ITEM);
 		if($offHand !== null){
-			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
+			$this->offHandInventory->setItem(0, $itemNbtDeserializeFunction($offHand));
 		}
 		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
@@ -330,7 +339,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($item);
+				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = $itemNbtDeserializeFunction($item);
 			}
 			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
