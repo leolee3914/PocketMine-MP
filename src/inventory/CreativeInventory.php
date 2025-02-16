@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\inventory\json\CreativeGroupData;
 use pocketmine\item\Item;
 use pocketmine\lang\Translatable;
@@ -57,7 +58,7 @@ final class CreativeInventory{
 			"items" => CreativeCategory::ITEMS,
 		] as $categoryId => $categoryEnum){
 			$groups = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
-				Path::join(\pocketmine\BEDROCK_DATA_PATH, "creative", $categoryId . ".json"),
+				Path::join(BedrockDataFiles::CREATIVE, $categoryId . ".json"),
 				CreativeGroupData::class
 			);
 
