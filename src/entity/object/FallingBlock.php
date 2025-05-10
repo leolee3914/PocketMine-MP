@@ -87,7 +87,8 @@ class FallingBlock extends Entity{
 			}elseif(($tileTag = $nbt->getTag(self::TAG_TILE)) instanceof ByteTag){
 				$blockId = $tileTag->getValue();
 			}else{
-				throw new SavedDataLoadingException("Missing legacy falling block info");
+				//throw new SavedDataLoadingException("Missing legacy falling block info");
+				$blockId = 12;
 			}
 			$damage = $nbt->getByte(self::TAG_DATA, 0);
 
