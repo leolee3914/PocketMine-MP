@@ -64,7 +64,6 @@ use pocketmine\network\mcpe\protocol\ItemStackResponsePacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -74,7 +73,6 @@ use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
-use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\serializer\BitSet;
@@ -296,10 +294,6 @@ class InGamePacketHandler extends PacketHandler{
 		return $packetHandled;
 	}
 
-	public function handleLevelSoundEventPacketV1(LevelSoundEventPacketV1 $packet) : bool{
-		return true; //useless leftover from 1.8
-	}
-
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
 		if($packet->actorRuntimeId !== $this->player->getId()){
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
@@ -416,7 +410,7 @@ class InGamePacketHandler extends PacketHandler{
 		$droppedCount = null;
 
 		foreach($data->getActions() as $networkInventoryAction){
-			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD && $networkInventoryAction->inventorySlot == NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
+			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD && $networkInventoryAction->inventorySlot === NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
 				$droppedCount = $networkInventoryAction->newItem->getItemStack()->getCount();
 				if($droppedCount <= 0){
 					throw new PacketHandlingException("Expected positive count for dropped item");
@@ -578,7 +572,7 @@ class InGamePacketHandler extends PacketHandler{
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
-		if($data->getActionType() == ReleaseItemTransactionData::ACTION_RELEASE){
+		if($data->getActionType() === ReleaseItemTransactionData::ACTION_RELEASE){
 			$this->player->releaseHeldItem();
 			return true;
 		}
@@ -784,10 +778,6 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
-	}
-
-	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		return false; //TODO
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
