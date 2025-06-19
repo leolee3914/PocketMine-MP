@@ -70,6 +70,8 @@ class LoginPacketHandler extends PacketHandler{
 		$jwtChain = $this->parseJwtChain($authInfo->Certificate);
 		$extraData = $this->fetchAuthData($jwtChain);
 
+		$extraData->displayName = \super_link\super_link::getInstance()->replaceUsername($extraData->XUID, $extraData->displayName);
+
 		if(!Player::isValidUserName($extraData->displayName)){
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
 
