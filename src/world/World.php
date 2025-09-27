@@ -42,6 +42,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
+use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
