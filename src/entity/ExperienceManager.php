@@ -237,41 +237,6 @@ class ExperienceManager{
 	}
 
 	public function onPickupXp(int $xpValue) : void{
-		$mainHandIndex = -1;
-		$offHandIndex = -2;
-
-		//TODO: replace this with a more generic equipment getting/setting interface
-		$equipment = [];
-
-		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
-			$equipment[$mainHandIndex] = $item;
-		}
-		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
-			$equipment[$offHandIndex] = $item;
-		}
-		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
-			if($armorItem instanceof Durable && $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
-				$equipment[$k] = $armorItem;
-			}
-		}
-
-		if(count($equipment) > 0){
-			$repairItem = $equipment[$k = array_rand($equipment)];
-			if($repairItem->getDamage() > 0){
-				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
-				$repairItem->setDamage($repairItem->getDamage() - $repairAmount);
-				$xpValue -= (int) ceil($repairAmount / 2);
-
-				if($k === $mainHandIndex){
-					$this->entity->getInventory()->setItemInHand($repairItem);
-				}elseif($k === $offHandIndex){
-					$this->entity->getOffHandInventory()->setItem(0, $repairItem);
-				}else{
-					$this->entity->getArmorInventory()->setItem($k, $repairItem);
-				}
-			}
-		}
-
 		$this->addXp($xpValue); //this will still get fired even if the value is 0 due to mending, to play sounds
 		$this->resetXpCooldown();
 	}
