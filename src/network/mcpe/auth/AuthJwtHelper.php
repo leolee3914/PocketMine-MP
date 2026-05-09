@@ -28,7 +28,6 @@ use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\types\login\JwtBodyRfc7519;
 use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthJwtBody;
-use pocketmine\network\mcpe\protocol\types\login\openid\SelfSignedJwtBody;
 use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtBody;
 use pocketmine\network\mcpe\protocol\types\login\SelfSignedJwtHeader;
 use function base64_decode;
@@ -55,11 +54,11 @@ final class AuthJwtHelper{
 	}
 
 	/**
-	 * @throws VerifyLoginException
+	 * @throws VerifyLoginException if errors are encountered
 	 */
-	private static function validateAuthToken(string $jwt, string $signingKeyDer, ?string $issuer, string $audience, XboxAuthJwtBody|SelfSignedJwtBody $claims) : void{
+	public static function validateOpenIdAuthToken(string $jwt, string $signingKeyDer, string $issuer, string $audience) : XboxAuthJwtBody{
 		try{
-			if(!JwtUtils::verify($jwt, $signingKeyDer, ec: $claims instanceof SelfSignedJwtBody)){
+			if(!JwtUtils::verify($jwt, $signingKeyDer, ec: false)){
 				throw new VerifyLoginException("Invalid JWT signature", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badSignature());
 			}
 		}catch(JwtException $e){
@@ -80,12 +79,13 @@ final class AuthJwtHelper{
 		$mapper->bRemoveUndefinedAttributes = true;
 
 		try{
-			$mapper->map($claimsArray, $claims);
+			//nasty dynamic new for JsonMapper
+			$claims = $mapper->map($claimsArray, new XboxAuthJwtBody());
 		}catch(\JsonMapper_Exception $e){
 			throw new VerifyLoginException("Invalid chain link body: " . $e->getMessage(), null, 0, $e);
 		}
 
-		if($issuer !== null && (!isset($claims->iss) || $claims->iss !== $issuer)){
+		if(!isset($claims->iss) || $claims->iss !== $issuer){
 			throw new VerifyLoginException("Invalid JWT issuer");
 		}
 
@@ -94,28 +94,11 @@ final class AuthJwtHelper{
 		}
 
 		self::checkExpiry($claims);
-	}
 
-	/**
-	 * @throws VerifyLoginException if errors are encountered
-	 */
-	public static function validateSelfSignedAuthToken(string $jwt, string $signingKeyDer, string $audience) : SelfSignedJwtBody{
-		$claims = new SelfSignedJwtBody();
-		self::validateAuthToken($jwt, $signingKeyDer, null, $audience, $claims);
 		return $claims;
 	}
 
 	/**
-	 * @throws VerifyLoginException if errors are encountered
-	 */
-	public static function validateOpenIdAuthToken(string $jwt, string $signingKeyDer, string $issuer, string $audience) : XboxAuthJwtBody{
-		$claims = new XboxAuthJwtBody();
-		self::validateAuthToken($jwt, $signingKeyDer, $issuer, $audience, $claims);
-		return $claims;
-	}
-
-	/**
-	 * @deprecated
 	 * @throws VerifyLoginException if errors are encountered
 	 */
 	public static function validateLegacyAuthToken(string $jwt, ?string $expectedKeyDer) : LegacyAuthJwtBody{
@@ -142,9 +125,6 @@ final class AuthJwtHelper{
 		return $claims;
 	}
 
-	/**
-	 * Used for validating the info in clientDataJwt
-	 */
 	public static function validateSelfSignedToken(string $jwt, ?string $expectedKeyDer) : void{
 		try{
 			[$headersArray, ] = JwtUtils::parse($jwt);
