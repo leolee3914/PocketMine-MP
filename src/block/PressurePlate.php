@@ -30,6 +30,8 @@ use pocketmine\event\block\PressurePlateUpdateEvent;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\player\GameMode;
+use pocketmine\player\Player;
 use pocketmine\world\sound\PressurePlateActivateSound;
 use pocketmine\world\sound\PressurePlateDeactivateSound;
 use function count;
@@ -115,7 +117,9 @@ abstract class PressurePlate extends Transparent{
 	 * @return Entity[]
 	 */
 	protected function filterIrrelevantEntities(array $entities) : array{
-		return $entities;
+		return array_filter($entities, function ( Entity $e ) {
+			return $e instanceof Player ? $e->getGamemode() !== GameMode::SPECTATOR : true;
+		});
 	}
 
 	public function onScheduledUpdate() : void{
