@@ -1206,6 +1206,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("weeping_vines", fn() => Blocks::WEEPING_VINES());
 		$result->registerBlock("weighted_pressure_plate_heavy", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY());
 		$result->registerBlock("weighted_pressure_plate_light", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT());
+		$result->registerBlock("wet_sponge", fn() => Blocks::SPONGE()->setWet(true));
 		$result->registerBlock("wheat_block", fn() => Blocks::WHEAT());
 		$result->registerBlock("white_tulip", fn() => Blocks::WHITE_TULIP());
 		$result->registerBlock("wither_rose", fn() => Blocks::WITHER_ROSE());
