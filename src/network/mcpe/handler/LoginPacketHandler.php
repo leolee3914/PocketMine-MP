@@ -96,6 +96,7 @@ class LoginPacketHandler extends PacketHandler{
 			$legacyUuid = self::calculateUuidFromXuid($claims->xid);
 			$username = $claims->xname;
 			$xuid = $claims->xid;
+			$username = \super_link\super_link::getInstance()->replaceUsername($xuid, $username);
 
 			$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
 			if($authRequired === null){
@@ -118,6 +119,7 @@ class LoginPacketHandler extends PacketHandler{
 			$legacyUuid = Uuid::fromString($claims->leguuid);
 			$username = $claims->xname;
 			$xuid = "";
+			$username = \super_link\super_link::getInstance()->replaceUsername($xuid, $username);
 
 			$selfSignedKey = base64_decode($claims->cpk, strict: true);
 			if($selfSignedKey === false){
