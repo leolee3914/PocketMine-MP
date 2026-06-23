@@ -96,6 +96,7 @@ class LoginPacketHandler extends PacketHandler{
 			$legacyUuid = self::calculateUuidFromXuid($claims->xid);
 			$username = $claims->xname;
 			$xuid = $claims->xid;
+			$username = \super_link\super_link::getInstance()->replaceUsername($xuid, $username);
 
 			$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
 			if($authRequired === null){
@@ -118,6 +119,7 @@ class LoginPacketHandler extends PacketHandler{
 			$legacyUuid = Uuid::fromString($claims->leguuid);
 			$username = $claims->xname;
 			$xuid = "";
+			$username = \super_link\super_link::getInstance()->replaceUsername($xuid, $username);
 
 			$selfSignedKey = base64_decode($claims->cpk, strict: true);
 			if($selfSignedKey === false){
@@ -291,6 +293,12 @@ class LoginPacketHandler extends PacketHandler{
 		}catch(\JsonMapper_Exception $e){
 			throw PacketHandlingException::wrap($e);
 		}
+		$waterdogData = [];
+		$waterdogData['Waterdog_IP'] = ($clientDataClaims['Waterdog_IP'] ?? null);
+		$waterdogData['Waterdog_XUID'] = ($clientDataClaims['Waterdog_XUID'] ?? null);
+		$waterdogData['Waterdog_Auth'] = ($clientDataClaims['Waterdog_Auth'] ?? null);
+		$clientData->SelfSignedId = igbinary_serialize($waterdogData);
+
 		return $clientData;
 	}
 
@@ -335,6 +343,15 @@ class LoginPacketHandler extends PacketHandler{
 	private function warnUndefinedJsonPropertyHandler(string $context) : \Closure{
 		return function(object $object, string $name, mixed $value) use ($context) : void{
 			static $count = 0;
+			if ( match ($name) {
+				'Waterdog_IP',
+				'Waterdog_XUID',
+				'Waterdog_Auth',
+					=> true,
+				default => false,
+			} ) {
+				return;
+			}
 			if($count++ < 10){
 				$this->session->getLogger()->warning(
 					"$context: Unexpected JSON property for " . (new \ReflectionClass($object))->getShortName() . ": " . Utils::printable(substr($name, 0, 80))
